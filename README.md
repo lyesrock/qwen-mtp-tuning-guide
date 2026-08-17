@@ -81,6 +81,35 @@ faster than f16 on the spec arms.
 
 ---
 
+## Q4 vs Q5 — which file do I use? (and why the tables mix both)
+
+The quant (Q4_K_XL vs Q5_K_XL) is a **separate choice from the MTP tuning**. The MTP
+settings above (`n-max`, `p-min`, KV cache) are per *(model, GPU)* — they do **not**
+change between Q4 and Q5. What changes is the **baseline speed** (fewer bytes to move
+per token with Q4), so the absolute tok/s numbers differ.
+
+- **Q5_K_XL** was tested on **all five models**, on both card classes (it's the
+  production quant on both boxes).
+- **Q4_K_XL** was tested on **Qwen3.8-27B only** (the model this tuning work focused
+  on), on both card classes. If you run Q4_K_XL of another model, expect the same MTP
+  settings to apply and a similar +10% baseline shift.
+
+Measured Q4 vs Q5, Qwen3.8-27B:
+
+| Card | Baseline Q5 → Q4 | Best MTP arm Q5 → Q4 |
+|---|---|---|
+| 2× P40 | 11.8 → 13.2 (+12%) | 22.6 (n4 gated) → 23.4 (n4 gated, +3.5%) |
+| 5090 | 69.6 → 76.3 (+10%) | 147.5 (n6 gated) → 171.7 (n4 ungated, +16%) |
+
+**Trade-off:** Q4_K_XL is faster on both card classes (bandwidth is the bottleneck in
+decode, and Q4 moves ~15% fewer weight bytes). Q5_K_XL has less quantization loss.
+Both are "XL" mixed quants (attention/embeddings kept at higher precision), so the
+quality gap is small but real. On a bandwidth-starved card the Q4 speed win is modest
+(+3.5% on the best arm); on a bandwidth-rich card it's larger (+16%) because there's
+headroom to use the extra bandwidth.
+
+---
+
 ## The two rules (why the settings differ per card)
 
 MTP works in two phases per decode step:
