@@ -1,0 +1,9 @@
+arm,model,ctx,quant,kv_cache,decode_mean_tps,decode_median_tps,prefill20k_tps,draft_acceptance
+baseline,Qwen3.8-27B,262144,Q4_K_XL,q4_0,13.2,13.2,~300,
+n4_gated_0.75,Qwen3.8-27B,262144,Q4_K_XL,q4_0,23.4,24.6,302,0.822
+n6_gated_0.75,Qwen3.8-27B,262144,Q4_K_XL,q4_0,22.5,23.9,297,0.799
+n4_ungated,Qwen3.8-27B,262144,Q4_K_XL,q4_0,23.6,25.4,301,0.683
+baseline,Qwen3.8-27B,262144,Q4_K_XL,f16,13.4,13.4,375,
+n4_gated_0.75,Qwen3.8-27B,262144,Q4_K_XL,f16,23.6,25.0,309,0.832
+n6_gated_0.75,Qwen3.8-27B,262144,Q4_K_XL,f16,22.4,21.6,302,0.797
+n4_ungated,Qwen3.8-27B,262144,Q4_K_XL,f16,22.6,23.1,309,0.632
